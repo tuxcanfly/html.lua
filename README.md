@@ -9,8 +9,8 @@ Install:
 Put this script in your extensions directory:
 
 * Linux: `~/.local/share/vlc/lua/playlist/`
-* Windows: `C:/Program Files/VideoLAN/VLC/lua/extensions/`
-* Mac: `/Applications/VLC.app/Contents/MacOS/share/lua/extensions/`
+* Windows: `C:/Program Files/VideoLAN/VLC/lua/playlist/`
+* Mac: `/Applications/VLC.app/Contents/MacOS/share/lua/playlist/`
 
 Restart VLC.
 
