@@ -1,6 +1,7 @@
 --[[
-   Translate video webpages URLs to the corresponding
-   video URL
+ Find all video links in a webpage and build a playlist.
+
+ © Copyright 2012 @tuxcanfly
 
  This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -17,6 +18,27 @@
  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston MA 02110-1301, USA.
 --]]
 
+local url = require("socket.url")
+
+local exts = {
+    "3g2",
+    "3gp",
+    "asf",
+    "asx",
+    "avi",
+    "flv",
+    "mov",
+    "mp4",
+    "mpg",
+    "mpeg",
+    "mpeg4",
+    "ogv",
+    "mkv",
+    "rm",
+    "webm",
+    "wmv"
+}
+
 -- Probe function.
 function probe()
     return vlc.access == "http"
@@ -29,13 +51,16 @@ function parse()
     do
         line = vlc.readline()
         if not line then break end
-        local exts = { "avi", "mpg" }
-        local domain = vlc.path:sub(0, vlc.path:find('/'))
+        local base = vlc.access .. '://' .. vlc.path
         for _,ext in pairs(exts) do
-            r = string.match( line, 'href="((.*).' .. ext .. ')"' )
+            r = string.match( line, 'href="((.-).' .. ext .. ')"' )
             if r then
-                path = vlc.access .. '://' .. domain .. vlc.strings.decode_uri( r )
-                table.insert( p, { path = path; url = vlc.path;} )
+                if r:sub(0, 7) == 'http://' then
+                    path = r
+                else
+                    path = url.absolute(base, vlc.strings.decode_uri( r ))
+                end
+                table.insert( p, { path = path; url = vlc.path; } )
             end
         end
     end
