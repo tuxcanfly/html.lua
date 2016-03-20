@@ -18,8 +18,6 @@
  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston MA 02110-1301, USA.
 --]]
 
-local url = require("socket.url")
-
 local exts = {
     "3g2",
     "3gp",
@@ -51,14 +49,14 @@ function parse()
     do
         line = vlc.readline()
         if not line then break end
-        local base = vlc.access .. '://' .. vlc.path
+        _,_, base = string.find( vlc.path, "^(.+/)" )
         for _,ext in pairs(exts) do
             r = string.match( line, 'href="((.-).' .. ext .. ')"' )
             if r then
-                if r:sub(0, 7) == 'http://' then
+                if r:sub(0, 4) == vlc.access then
                     path = r
                 else
-                    path = url.absolute(base, vlc.strings.decode_uri( r ))
+                    path = vlc.access .. '://' .. base .. vlc.strings.decode_uri( r )
                 end
                 table.insert( p, { path = path; url = vlc.path; } )
             end
